@@ -1,1 +1,5 @@
 *.bkp
+*.o
+build/
+.vscode/
+*.log
