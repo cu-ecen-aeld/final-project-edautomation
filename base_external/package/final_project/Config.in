@@ -1,0 +1,5 @@
+
+config BR2_PACKAGE_FINAL_PROJECT
+	bool "final_project"
+	help
+	  Packages for the final project
