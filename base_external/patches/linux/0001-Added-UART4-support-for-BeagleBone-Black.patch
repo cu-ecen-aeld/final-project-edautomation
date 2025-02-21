@@ -25,17 +25,10 @@ diff --git a/arch/arm/boot/dts/am335x-bone-common.dtsi b/arch/arm/boot/dts/am335
 	cpsw_default: cpsw_default {
 		pinctrl-single,pins = <
 			/* Slave 1 */
-@@ -195,6 +216,27 @@
- 	status = "okay";
+@@ -183,6 +190,13 @@
+ 	 symlink = "bone/uart/0";
  };
- 
-+&uart1 {
-+    pinctrl-names = "default";
-+    pinctrl-0 = <&uart1_pins>;
-+
-+    status = "okay";
-+};
-+
+
 +&uart4 {
 +    pinctrl-names = "default";
 +    pinctrl-0 = <&uart4_pins>;
@@ -43,15 +36,8 @@ diff --git a/arch/arm/boot/dts/am335x-bone-common.dtsi b/arch/arm/boot/dts/am335
 +    status = "okay";
 +};
 +
-+&uart5 {
-+    pinctrl-names = "default";
-+    pinctrl-0 = <&uart5_pins>;
-+
-+    status = "okay";
-+};
-+
- &usb {
- 	status = "okay";
- };
+ &usb0 {
+ 	 dr_mode = "peripheral";
+ 	 interrupts-extended = <&intc 18 &tps 0>;
 -- 
 2.17.1
