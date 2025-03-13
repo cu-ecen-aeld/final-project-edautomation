@@ -5,7 +5,7 @@
 #
 ##############################################################
 
-FINAL_PROJECT_VERSION = '7a1f2714d430266b0993aaef304a23b5731ca076'
+FINAL_PROJECT_VERSION = 'b5b008d0cd04377648655f2862ed980f9ca2d3d1'
 # Note: Be sure to reference the *ssh* repository URL here (not https) to work properly
 # with ssh keys and the automated build/test system.
 # Your site should start with git@github.com:
@@ -20,8 +20,8 @@ endef
 
 define FINAL_PROJECT_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 $(@D)/serial_control/serial_control $(TARGET_DIR)/usr/bin/serial_control
-	$(INSTALL) -m 0755 $(@D)/serial_driver/serial_driver_load $(TARGET_DIR)/usr/bin/
-	$(INSTALL) -m 0755 $(@D)/serial_driver/serial_driver_unload $(TARGET_DIR)/usr/bin/
+	$(INSTALL) -m 0755 $(@D)/serial_driver/serial_modbus_load $(TARGET_DIR)/usr/bin/
+	$(INSTALL) -m 0755 $(@D)/serial_driver/serial_modbus_unload $(TARGET_DIR)/usr/bin/
 endef
 
 $(eval $(kernel-module))
