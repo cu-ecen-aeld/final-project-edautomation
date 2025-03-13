@@ -25,7 +25,7 @@ diff --git a/arch/arm/boot/dts/am335x-bone-common.dtsi b/arch/arm/boot/dts/am335
 	cpsw_default: cpsw_default {
 		pinctrl-single,pins = <
 			/* Slave 1 */
-@@ -183,6 +190,13 @@
+@@ -183,6 +190,18 @@
  	 symlink = "bone/uart/0";
  };
 
@@ -34,6 +34,11 @@ diff --git a/arch/arm/boot/dts/am335x-bone-common.dtsi b/arch/arm/boot/dts/am335
 +    pinctrl-0 = <&uart4_pins>;
 +
 +    status = "okay";
++
++	 serialdev {
++	 	compatible = "serialdev";
++	 	status = "okay";
++	 };
 +};
 +
  &usb0 {
