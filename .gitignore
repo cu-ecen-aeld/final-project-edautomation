@@ -3,3 +3,7 @@
 build/
 .vscode/
 *.log
+
+theia/UartLoopback/Debug/
+
+stm32cube/UartLoopboack/Debug/
