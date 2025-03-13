@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "byte_fifo.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +36,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define BUFFER_SIZE 256
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -44,7 +44,12 @@
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+static uint8_t fifo_data[BUFFER_SIZE];
+static struct byte_fifo_t fifo =
+    {
+        .data = fifo_data,
+        .size = BUFFER_SIZE,
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,16 +96,23 @@ int main(void)
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
 
+    byte_fifo_init(&fifo);
+
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        uint8_t rxData;
-        if (HAL_UART_Receive(&huart1, &rxData, 1, HAL_MAX_DELAY) == HAL_OK)
+        uint8_t tmp_byte;
+        while (HAL_UART_Receive(&huart1, &tmp_byte, 1, 10) == HAL_OK)
         {
-            HAL_UART_Transmit(&huart1, &rxData, 1, HAL_MAX_DELAY);
+            byte_fifo_write(&fifo, &tmp_byte, 1);
+        }
+
+        while (byte_fifo_read(&fifo, &tmp_byte, 1) > 0)
+        {
+            HAL_UART_Transmit(&huart1, &tmp_byte, 1, HAL_MAX_DELAY);
         }
         /* USER CODE END WHILE */
 
@@ -183,7 +195,7 @@ static void MX_USART1_UART_Init(void)
     {
         Error_Handler();
     }
-    if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)
+    if (HAL_UARTEx_EnableFifoMode(&huart1) != HAL_OK)
     {
         Error_Handler();
     }
