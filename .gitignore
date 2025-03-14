@@ -7,3 +7,4 @@ build/
 theia/UartLoopback/Debug/
 
 stm32cube/UartLoopboack/Debug/
+stm32cube/DummyModbusServer/STM32CubeIDE/Debug/
