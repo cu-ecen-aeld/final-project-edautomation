@@ -1,5 +1,9 @@
 #include "port.h"
+#include "stm32c0xx_hal.h"
+
 #include <string.h>
+
+extern UART_HandleTypeDef huart1;
 
 static int32_t read_serial(uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg);
 static int32_t write_serial(const uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg);

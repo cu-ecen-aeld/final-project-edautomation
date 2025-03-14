@@ -17,7 +17,6 @@ typedef struct tNmbsServer
     uint16_t regs[REG_BUF_SIZE];
 } nmbs_server_t;
 
-nmbs_error nmbs_server_init(nmbs_t* nmbs, nmbs_server_t* server);
 nmbs_error nmbs_client_init(nmbs_t* nmbs);
 
 #ifdef __cplusplus

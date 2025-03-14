@@ -21,6 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+
 #include "port.h"
 /* USER CODE END Includes */
 
@@ -40,21 +42,11 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-nmbs_t nmbs;
-nmbs_server_t nmbs_server = {
-    .id = 0x01,
-    .regs = {
-        0xDEAD,
-        0xBEEF,
-        0xABAD,
-        0xBABE,
-    },
-};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -78,7 +70,7 @@ PUTCHAR_PROTOTYPE
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+nmbs_t nmbs;
 /* USER CODE END 0 */
 
 /**
@@ -113,25 +105,40 @@ int main(void)
     MX_USART2_UART_Init();
     /* USER CODE BEGIN 2 */
 
-    if (nmbs_server_init(&nmbs, &nmbs_server) != NMBS_ERROR_NONE)
+    uint16_t regs_test[32];
+    if (NMBS_ERROR_NONE != nmbs_client_init(&nmbs))
     {
         __BKPT();
     }
 
+    printf("Hello, from dummy modbus client!\r\n");
+
     /* USER CODE END 2 */
-
-    /* Initialize leds */
-    BSP_LED_Init(LED_GREEN);
-
-    /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
-    BSP_PB_Init(BUTTON_USER, BUTTON_MODE_EXTI);
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        nmbs_server_poll(&nmbs);
-        BSP_LED_Toggle(LED_GREEN);
+        nmbs_set_destination_rtu_address(&nmbs, 0x01);
+        nmbs_error status = nmbs_read_holding_registers(&nmbs, 0, 4, regs_test);
+        if (status != NMBS_ERROR_NONE)
+        {
+            continue;
+        }
+        regs_test[0] = 0xBABE;
+        regs_test[1] = 0xBABE;
+        regs_test[2] = 0xBABE;
+        regs_test[3] = 0xBABE;
+        status = nmbs_write_multiple_registers(&nmbs, 0, 4, regs_test);
+        if (status != NMBS_ERROR_NONE)
+        {
+            while (true)
+            {
+                __BKPT();
+            }
+        }
+        HAL_Delay(100);
+
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
@@ -147,14 +154,15 @@ void SystemClock_Config(void)
 {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-
-    __HAL_FLASH_SET_LATENCY(FLASH_LATENCY_1);
+    RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
     /** Initializes the RCC Oscillators according to the specified parameters
      * in the RCC_OscInitTypeDef structure.
      */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
     {
         Error_Handler();
@@ -162,13 +170,19 @@ void SystemClock_Config(void)
 
     /** Initializes the CPU, AHB and APB buses clocks
      */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
-    RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV1;
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+    PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK1;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
         Error_Handler();
     }
@@ -197,21 +211,8 @@ static void MX_USART1_UART_Init(void)
     huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart1.Init.OverSampling = UART_OVERSAMPLING_16;
     huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-    huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
     huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
     if (HAL_UART_Init(&huart1) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    if (HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    if (HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    if (HAL_UARTEx_EnableFifoMode(&huart1) != HAL_OK)
     {
         Error_Handler();
     }
@@ -243,7 +244,6 @@ static void MX_USART2_UART_Init(void)
     huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
     huart2.Init.OverSampling = UART_OVERSAMPLING_16;
     huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-    huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
     huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
     if (HAL_UART_Init(&huart2) != HAL_OK)
     {
@@ -265,7 +265,6 @@ static void MX_GPIO_Init(void)
     /* USER CODE END MX_GPIO_Init_1 */
 
     /* GPIO Ports Clock Enable */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
