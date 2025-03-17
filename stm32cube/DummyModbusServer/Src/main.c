@@ -116,6 +116,7 @@ int main(void)
     if (nmbs_server_init(&nmbs, &nmbs_server) != NMBS_ERROR_NONE)
     {
         __BKPT();
+        while (1);
     }
 
     /* USER CODE END 2 */

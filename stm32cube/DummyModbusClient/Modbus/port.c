@@ -32,19 +32,15 @@ nmbs_error nmbs_client_init(nmbs_t* nmbs)
 
 static int32_t read_serial(uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg)
 {
-    HAL_StatusTypeDef status = HAL_OK;
-    uint16_t read_bytes = 0;
-    while ((status != HAL_TIMEOUT) && (read_bytes < count))
+    HAL_StatusTypeDef status = HAL_UART_Receive(&huart1, buf, count, byte_timeout_ms);
+    if (status == HAL_OK)
     {
-        uint8_t byte = 0;
-        status = HAL_UART_Receive(&huart1, &byte, 1, byte_timeout_ms);
-        if (status == HAL_OK)
-        {
-            buf[read_bytes] = byte;
-            read_bytes++;
-        }
+        return count;
     }
-    return read_bytes;
+    else
+    {
+        return 0;
+    }
 }
 
 static int32_t write_serial(const uint8_t* buf, uint16_t count, int32_t byte_timeout_ms, void* arg)
