@@ -5,7 +5,7 @@
 #
 ##############################################################
 
-FINAL_PROJECT_VERSION = '441c128056fc09f1ba24a8fd42936d376826287d'
+FINAL_PROJECT_VERSION = '0c8c924a422458df3e406f55aaed8c5304fd1b2f'
 # Note: Be sure to reference the *ssh* repository URL here (not https) to work properly
 # with ssh keys and the automated build/test system.
 # Your site should start with git@github.com:
