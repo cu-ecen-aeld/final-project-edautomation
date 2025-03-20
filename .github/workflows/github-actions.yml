@@ -1,16 +1,33 @@
-name: assignment-test
+name: buildroot
 on:
     push:
-        tags-ignore:
-            - '*'
         branches:
             - '*'
 jobs:
-    dummy:
+    build-image:
         runs-on: self-hosted
+        timeout-minutes: 120
         steps:
-          - name: Placeholder
-            run: exit 0
+          - name: Checkout repo
+            uses: actions/checkout@v2
+        
+          - name: Checkout submodules
+            run: git submodule update --init --recursive
+
+          - name: Create SSH key
+            uses: webfactory/ssh-agent@v0.5.3
+            with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          - name: Build image
+            env:
+                GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+            run: ./build.sh
+
+          - name: Cleanup
+            if: always()
+            run: |
+              ssh-add -D
     # full-test:
     #    container: cuaesd/aesd-autotest:24-assignment4-buildroot
     #    runs-on: self-hosted
