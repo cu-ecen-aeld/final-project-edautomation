@@ -14,6 +14,11 @@ jobs:
           - name: Checkout submodules
             run: git submodule update --init --recursive
 
+          - name: Checkout buildroot 2022.02.x
+            run: |
+                cd buildroot
+                git checkout origin/2022.02.x
+
           - name: Create SSH key
             uses: webfactory/ssh-agent@v0.5.3
             with:
