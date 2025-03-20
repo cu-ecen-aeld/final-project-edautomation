@@ -14,11 +14,13 @@ jobs:
           - name: Checkout submodules
             run: git submodule update --init --recursive
 
+# Checkout the right branch, as on our local development machine
           - name: Checkout buildroot 2022.02.x
             run: |
                 cd buildroot
                 git checkout origin/2022.02.x
 
+# We will access another repository from our github account => ssh key is needed
           - name: Create SSH key
             uses: webfactory/ssh-agent@v0.5.3
             with:
@@ -36,22 +38,3 @@ jobs:
             if: always()
             run: |
               ssh-add -D
-    # full-test:
-    #    container: cuaesd/aesd-autotest:24-assignment4-buildroot
-    #    runs-on: self-hosted
-    #    timeout-minutes: 120
-    #    steps:
-    #      - uses: actions/checkout@v2
-    #      - name: Checkout submodules
-    #        run: git submodule update --init --recursive
-    #      - uses: webfactory/ssh-agent@v0.5.3
-    #        with:
-    #            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #      - name: Run full test
-    #        env:
-    #          GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
-    #        run: ./full-test.sh
-    #      - name: Cleanup
-    #        if: always()
-    #        run: |
-    #          ssh-add -D
