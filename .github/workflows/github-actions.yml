@@ -1,4 +1,4 @@
-name: buildroot
+name: Buildroot image
 on:
     push:
         branches:
@@ -24,10 +24,13 @@ jobs:
             with:
                 ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+# Call build twice: once for the configuration, once for the actual buid
           - name: Build image
             env:
                 GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
-            run: ./build.sh
+            run: |
+                ./build.sh
+                ./build.sh
 
           - name: Cleanup
             if: always()
