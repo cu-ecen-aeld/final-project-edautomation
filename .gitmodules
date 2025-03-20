@@ -1,2 +1,5 @@
 [submodule "buildroot"]
 	path = buildroot
+[submodule "nano_modbus"]
+	path = nano_modbus
+	url = https://github.com/debevv/nanoMODBUS.git
