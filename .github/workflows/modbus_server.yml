@@ -1,0 +1,11 @@
+name: STM32 image
+on:
+    push:
+        branches:
+            - '*'
+jobs:
+    dummy:
+        runs-on: self-hosted
+        steps:
+          - name: Placeholder
+            run: exit 0
