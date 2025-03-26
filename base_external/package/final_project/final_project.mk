@@ -5,7 +5,7 @@
 #
 ##############################################################
 
-FINAL_PROJECT_VERSION = '0c8c924a422458df3e406f55aaed8c5304fd1b2f'
+FINAL_PROJECT_VERSION = 'ab80cc29788cacd2e368b400a8c0ce7ad029e704'
 # Note: Be sure to reference the *ssh* repository URL here (not https) to work properly
 # with ssh keys and the automated build/test system.
 # Your site should start with git@github.com:
@@ -16,10 +16,12 @@ FINAL_PROJECT_MODULE_SUBDIRS = serial_driver
 
 define FINAL_PROJECT_BUILD_CMDS
 	$(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/serial_control all
+	$(MAKE) $(TARGET_CONFIGURE_OPTS) -C $(@D)/serial_demo all
 endef
 
 define FINAL_PROJECT_INSTALL_TARGET_CMDS
 	$(INSTALL) -m 0755 $(@D)/serial_control/serial_control $(TARGET_DIR)/usr/bin/serial_control
+	$(INSTALL) -m 0755 $(@D)/serial_demo/serial_demo $(TARGET_DIR)/usr/bin/serial_demo
 	$(INSTALL) -m 0755 $(@D)/serial_driver/serial_modbus_load $(TARGET_DIR)/usr/bin/
 	$(INSTALL) -m 0755 $(@D)/serial_driver/serial_modbus_unload $(TARGET_DIR)/usr/bin/
 endef
