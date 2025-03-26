@@ -87,7 +87,7 @@ static nmbs_error server_read_holding_registers(uint16_t address, uint16_t quant
 
     for (size_t i = 0; i < quantity; i++)
     {
-        if (address > REG_BUF_SIZE)
+        if (address + i > REG_BUF_SIZE)
         {
             return NMBS_ERROR_INVALID_REQUEST;
         }
@@ -109,7 +109,7 @@ static nmbs_error server_write_multiple_registers(uint16_t address, uint16_t qua
 
     for (size_t i = 0; i < quantity; i++)
     {
-        if (address > REG_BUF_SIZE)
+        if (address + i > REG_BUF_SIZE)
         {
             return NMBS_ERROR_INVALID_REQUEST;
         }
