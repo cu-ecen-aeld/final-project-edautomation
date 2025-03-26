@@ -22,5 +22,5 @@ jobs:
           - name: Build image
             uses: xanderhendriks/action-build-stm32cubeide@v10.0
             with:
-              project-path: 'stm32cube/DummyModbusServer'
+              project-path: 'stm32cube/DummyModbusServer/STM32CubeIDE'
               project-target: 'DummyModbusServer/Debug'
