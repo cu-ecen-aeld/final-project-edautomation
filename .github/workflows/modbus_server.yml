@@ -4,11 +4,6 @@ on:
         branches:
             - '*'
 jobs:
-    dummy:
-        runs-on: self-hosted
-        steps:
-          - name: Placeholder
-            run: exit 0
     
     build-image:
         runs-on: self-hosted
