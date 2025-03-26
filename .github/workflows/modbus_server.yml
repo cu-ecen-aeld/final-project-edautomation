@@ -24,3 +24,10 @@ jobs:
             with:
               project-path: 'stm32cube/DummyModbusServer/STM32CubeIDE'
               project-target: 'DummyModbusServer/Debug'
+
+    save-image:
+        - name: Upload binary as artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: DummyModbusServer_STM32C0
+            path: stm32cube/DummyModbusServer/STM32CubeIDE/Debug/DummyModbusServer.elf
