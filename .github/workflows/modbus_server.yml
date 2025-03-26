@@ -9,3 +9,18 @@ jobs:
         steps:
           - name: Placeholder
             run: exit 0
+    
+    build-image:
+        runs-on: self-hosted
+        steps:
+          - name: Checkout repo
+            uses: actions/checkout@v2
+        
+          - name: Checkout submodules
+            run: git submodule update --init --recursive
+
+          - name: Build image
+            uses: xanderhendriks/action-build-stm32cubeide@v10.0
+            with:
+              project-path: 'stm32cube/DummyModbusServer'
+              project-target: 'DummyModbusServer/Debug'
