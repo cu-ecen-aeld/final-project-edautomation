@@ -1,4 +1,4 @@
-name: Buildroot image
+name: Build images
 on:
     push:
         branches:
