@@ -4,7 +4,7 @@ on:
         branches:
             - '*'
 jobs:
-    build-buildroot-image:
+    buildroot:
         runs-on: self-hosted
         timeout-minutes: 120
         steps:
@@ -40,7 +40,15 @@ jobs:
               name: sdcard.img
               path: buildroot/output/images/sdcard.img
 
+          - name: Cleanup
+            if: always()
+            run: |
+              ssh-add -D
 
+    stm32:
+        runs-on: self-hosted
+        timeout-minutes: 120
+        steps:
           - name: Build stm32 image
             uses: xanderhendriks/action-build-stm32cubeide@v10.0
             with:
@@ -52,8 +60,3 @@ jobs:
             with:
               name: DummyModbusServer_STM32C0
               path: stm32cube/DummyModbusServer/STM32CubeIDE/Debug/DummyModbusServer.elf
-
-          - name: Cleanup
-            if: always()
-            run: |
-              ssh-add -D
