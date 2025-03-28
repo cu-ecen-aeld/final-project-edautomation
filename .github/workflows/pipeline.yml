@@ -1,0 +1,69 @@
+name: Build images
+on:
+    push:
+        branches:
+            - '*'
+jobs:
+    checkout:
+        runs-on: self-hosted
+        timeout-minutes: 120
+        steps:
+          - name: Checkout repo
+            uses: actions/checkout@v2
+        
+          - name: Checkout submodules
+            run: git submodule update --init --recursive
+        
+    buildroot:
+        needs: checkout
+        runs-on: self-hosted
+        timeout-minutes: 120
+        steps:
+
+# Checkout the right branch, as on our local development machine
+          - name: Checkout buildroot 2022.02.x
+            run: |
+                cd buildroot
+                git checkout origin/2022.02.x
+
+# We will access another repository from our github account => ssh key is needed
+          - name: Create SSH key
+            uses: webfactory/ssh-agent@v0.5.3
+            with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+# Call build twice: once for the configuration, once for the actual buid
+          - name: Build buildroot image
+            env:
+                GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+            run: |
+                ./build.sh
+                ./build.sh
+
+          - name: Upload sdcard image as artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: sdcard.img
+              path: buildroot/output/images/sdcard.img
+
+          - name: Cleanup
+            if: always()
+            run: |
+              ssh-add -D
+
+    stm32:
+        needs: checkout
+        runs-on: self-hosted
+        timeout-minutes: 120
+        steps:
+          - name: Build stm32 image
+            uses: xanderhendriks/action-build-stm32cubeide@v10.0
+            with:
+              project-path: 'stm32cube/DummyModbusServer/STM32CubeIDE'
+              project-target: 'DummyModbusServer/Debug'
+
+          - name: Upload DummyModbusServer as artifact
+            uses: actions/upload-artifact@v4
+            with:
+              name: DummyModbusServer_STM32C0
+              path: stm32cube/DummyModbusServer/STM32CubeIDE/Debug/DummyModbusServer.elf
