@@ -4,7 +4,7 @@ on:
         branches:
             - '*'
 jobs:
-    build-image:
+    build-buildroot-image:
         runs-on: self-hosted
         timeout-minutes: 120
         steps:
