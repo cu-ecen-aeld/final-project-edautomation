@@ -4,7 +4,7 @@ on:
         branches:
             - '*'
 jobs:
-    buildroot:
+    checkout:
         runs-on: self-hosted
         timeout-minutes: 120
         steps:
@@ -13,6 +13,12 @@ jobs:
         
           - name: Checkout submodules
             run: git submodule update --init --recursive
+        
+    buildroot:
+        needs: checkout
+        runs-on: self-hosted
+        timeout-minutes: 120
+        steps:
 
 # Checkout the right branch, as on our local development machine
           - name: Checkout buildroot 2022.02.x
@@ -46,6 +52,7 @@ jobs:
               ssh-add -D
 
     stm32:
+        needs: checkout
         runs-on: self-hosted
         timeout-minutes: 120
         steps:
