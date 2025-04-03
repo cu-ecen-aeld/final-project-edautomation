@@ -1,0 +1,17 @@
+#! /bin/sh
+
+case $1 in 
+    start)
+        echo "Loading serial modbus driver"
+        serial_modbus_load
+        ;;
+    stop)
+        echo "Stopping serial modbus driver"
+        serial_modbus_unload
+        ;;
+    *)
+        echo "Usage: $0 {start|stop}"
+    exit 1
+esac
+
+exit 0
